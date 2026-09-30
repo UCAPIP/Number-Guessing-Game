@@ -3,13 +3,21 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math/rand/v2"
 	"os"
 	"strconv"
 )
 
-var difficult int
+var timesToTry int
 
 func scanDifficult() {
+
+	difficults := map[int]int{
+		1: 10,
+		2: 5,
+		3: 3,
+	}
+
 	fmt.Print("\nEnter your choice: ")
 	scanner := bufio.NewScanner(os.Stdin)
 	if scanner.Scan() {
@@ -23,17 +31,17 @@ func scanDifficult() {
 			fmt.Println("Enter num of difficult")
 			scanDifficult()
 		}
-		difficult = num
+		timesToTry = difficults[num]
 	}
 
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Reading error:", err)
 	}
 
-	switch difficult {
-	case 1:
+	switch timesToTry {
+	case 10:
 		fmt.Println("\nGreat! You have selected the Easy difficulty level.")
-	case 2:
+	case 5:
 		fmt.Println("\nGreat! You have selected the Medium difficulty level.")
 	case 3:
 		fmt.Println("\nGreat! You have selected the Hard difficulty level.")
@@ -53,8 +61,31 @@ func main() {
 
 	scanDifficult()
 	fmt.Println("Let's start the game!")
-
-	for {
+	randomInt := rand.IntN(100)
+	for i := 1; i <= timesToTry; i++ {
+		fmt.Println(randomInt)
+		fmt.Print("Enter your guess: ")
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			text := scanner.Text()
+			num, err := strconv.Atoi(text)
+			if err != nil {
+				fmt.Println("Reading error:", err)
+				return
+			}
+			if num == randomInt {
+				fmt.Printf("Congratulations! You guessed the correct number in %v attempts.", i)
+				return
+			}
+			if num < randomInt {
+				fmt.Printf("Incorrect! The number is greater than %v.\n", num)
+				continue
+			}
+			if num > randomInt {
+				fmt.Printf("Incorrect! The number is less than %v.\n", num)
+				continue
+			}
+		}
 
 	}
 }
