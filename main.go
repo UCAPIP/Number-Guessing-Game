@@ -15,9 +15,9 @@ var timesToTry int
 func scanDifficult() error {
 
 	difficults := map[int]int{
-		1: 10,
-		2: 5,
-		3: 3,
+		1: 10, // Easy
+		2: 5,  // Medium
+		3: 3,  // Hard
 	}
 
 	fmt.Println("\n" + `Please select the difficulty level:
@@ -57,19 +57,20 @@ func scanDifficult() error {
 	return nil
 }
 
-func endMessage() {
-	fmt.Println("\nIf you want to play again - type Y or N for exit")
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		text := strings.ToUpper(scanner.Text())
-		switch text {
-		case "Y":
-			gameCycle()
-		case "N":
-			os.Exit(1)
-		default:
-			fmt.Println("UNKNOWN COMMAND")
-			endMessage()
+func playAgain() bool {
+	for {
+		fmt.Println("\nIf you want to play again - type Y or N for exit")
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			text := strings.ToUpper(scanner.Text())
+			switch text {
+			case "Y":
+				return true
+			case "N":
+				return false
+			default:
+				fmt.Println("UNKNOWN COMMAND")
+			}
 		}
 	}
 }
@@ -80,11 +81,11 @@ func gameCycle() {
 		fmt.Println(err)
 		return
 	}
-	randomInt := rand.IntN(100)
+	randomInt := rand.IntN(100) + 1
 	fmt.Println("Let's start the game!")
 	start := time.Now()
 	for i := 1; i <= timesToTry; i++ {
-		fmt.Println("Answer: ", randomInt) // -- Ответ
+		//fmt.Println("Answer: ", randomInt) -- Ответ
 		fmt.Print("Enter your guess: ")
 		scanner := bufio.NewScanner(os.Stdin)
 		if scanner.Scan() {
@@ -97,7 +98,7 @@ func gameCycle() {
 			if num == randomInt {
 				duration := time.Since(start)
 				fmt.Printf("Congratulations! You guessed the correct number in %v attempts. Time spent %s", i, duration)
-				endMessage()
+				return
 			}
 			if num < randomInt {
 				fmt.Printf("Incorrect! The number is greater than %v.\n", num)
@@ -110,12 +111,16 @@ func gameCycle() {
 		}
 	}
 	fmt.Println("\nGAME OVER! You have run out of attempts.")
-	endMessage()
 }
 
 func main() {
 	fmt.Println("Welcome to the Number Guessing Game!")
 	fmt.Println("I'm thinking of a number between 1 and 100.")
 	fmt.Println("You have 5 chances to guess the correct number.")
-	gameCycle()
+	for {
+		gameCycle()
+		if !playAgain() {
+			return
+		}
+	}
 }
