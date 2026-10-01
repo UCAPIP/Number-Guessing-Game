@@ -18,46 +18,46 @@ func scanDifficult() int {
 		3: 3,  // Hard
 	}
 
-	var timesToTry int
+	var difficult int
+	var err error
 
-	fmt.Println("\n" + `Please select the difficulty level:
+	for {
+		fmt.Println("\n" + `Please select the difficulty level:
 1. Easy (10 chances)
 2. Medium (5 chances)
 3. Hard (3 chances)`)
 
-	fmt.Print("\nEnter your choice: ")
-	scanner := bufio.NewScanner(os.Stdin)
-	if scanner.Scan() {
-		text := scanner.Text()
-		num, err := strconv.Atoi(text)
-		if err != nil {
+		fmt.Print("\nEnter your choice: ")
+		scanner := bufio.NewScanner(os.Stdin)
+		if scanner.Scan() {
+			text := scanner.Text()
+			difficult, err = strconv.Atoi(text)
+			if err != nil {
+				fmt.Println("Reading error:", err)
+				continue
+			}
+			if difficult > 3 || difficult < 1 {
+				continue
+			}
+		}
+
+		if err := scanner.Err(); err != nil {
 			fmt.Println("Reading error:", err)
-			return 0
+			continue
 		}
-		if num > 3 || num < 1 {
-			fmt.Println("Enter num of difficult")
-			scanDifficult()
+
+		switch difficults[difficult] {
+		case 10:
+			fmt.Println("\nGreat! You have selected the Easy difficulty level.")
+			return 10
+		case 5:
+			fmt.Println("\nGreat! You have selected the Medium difficulty level.")
+			return 5
+		case 3:
+			fmt.Println("\nGreat! You have selected the Hard difficulty level.")
+			return 3
 		}
-		timesToTry = difficults[num]
 	}
-
-	if err := scanner.Err(); err != nil {
-		fmt.Println("Reading error:", err)
-		return 0
-	}
-
-	switch timesToTry {
-	case 10:
-		fmt.Println("\nGreat! You have selected the Easy difficulty level.")
-		return 10
-	case 5:
-		fmt.Println("\nGreat! You have selected the Medium difficulty level.")
-		return 5
-	case 3:
-		fmt.Println("\nGreat! You have selected the Hard difficulty level.")
-		return 3
-	}
-	return 0
 }
 
 func playAgain() bool {
@@ -92,7 +92,7 @@ func gameCycle() {
 			num, err := strconv.Atoi(text)
 			if err != nil {
 				fmt.Println("Reading error:", err)
-				return
+				continue
 			}
 			if num == randomInt {
 				duration := time.Since(start)
